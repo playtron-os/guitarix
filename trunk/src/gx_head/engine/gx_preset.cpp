@@ -1227,6 +1227,8 @@ void GxSettings::check_settings_dir(gx_system::CmdlineOptions& opt, bool *need_n
     fname = opt.get_preset_filepath(bank_list);
     if (access(fname.c_str(), R_OK) != 0) {
         ofstream f(fname.c_str());
+        // An empty file is no bank list: PresetBanks::parse would report a parse error.
+        f << "[]" << endl;
         if (!f.good()) {
             throw GxFatalError(
                 boost::format(_("can't create '%1%' in directory '%2%'"))
