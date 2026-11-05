@@ -40,8 +40,11 @@
 #include <malloc.h>
 
 void set_memory_allocation() {
+    // Most desktops cap locked memory below a whole process. That is no error: the realtime
+    // code and data are still locked on their own, in GxMachine.
     if (mlockall(MCL_CURRENT | MCL_FUTURE))
-        gx_print_error("system init", "mlockall failed:");
+        gx_print_warning("system init",
+            boost::format(_("mlockall failed: %1%")) % strerror(errno));
 #if defined(M_TRIM_THRESHOLD) && defined(M_MMAP_MAX)
     mallopt(M_TRIM_THRESHOLD, -1);
     mallopt(M_MMAP_MAX, 0);
